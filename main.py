@@ -98,25 +98,20 @@ def product_matrix(m, a, b, c):
     q = n - len(b)
     for i in range(n):
         for j in range(n):
-            # print("j:", j)
             sum = 0
             for pair in m[i]:
 
                 column = pair[1]
                 value = pair[0]
-                # print("for:", column, pair[0])
                 # verificam daca exista element in matricea B pe coloana = j si linia = column
                 if j == q + column and column < j:
                     # am element in b[column]
                     sum += value * b[column]
-                    # print("b:", value, "*", b[column])
                 elif column - p == j and column > j:
                     # am element in c[column-p]
                     sum += value * c[column - p]
-                    # print("c:", value, "*", c[column - p])
                 elif column == j:
                     sum += value * a[column]
-                    # print("a", value, "*", a[column])
             if sum != 0:
                 s[i].append([sum, j])
 
@@ -139,39 +134,46 @@ def tridiagonal_product(a, b, c, x, y, z):
     q2 = n - len(y)
     product = [[] for _ in range(n)]
     for i in range(n):
-        print("linia:", i)
-        print("a:", a[i])
-        if p1 <= i <= n - 1:
-            # elem de pe linia i
-            print("c:", c[i - p1])
-        if 0 <= i <= n - q1 - 1:
-            print("b:", b[i])
         for j in range(n):
-            s = 0
-            print("coloana:", j)
-            print("x:", x[j])
-            if 0 <= j <= n - p2 - 1:
-                # elem de pe col j
-                print("z:", z[j])
-            if q2 <= j <= n - 1:
-                print("y:", y[j - q2])
-            product[i].append([s, j])
+            sum = 0
+            for k in range(n):
+                # trebuie sa existe elem in prima matrice pe linia i, col k, iar in a doua matrice pe linia k, col j
+                value = 0
+                if k == q1 + i and i < k:
+                    # am element in b[i]
+                    value = b[i]
+                elif i - p1 == k and i > k:
+                    # am element in c[i-p1]
+                    value = c[i - p1]
+                elif i == k:
+                    value = a[i]
+                if value != 0:
+                    if j == q2 + k and k < j:
+                        # am element in y[k]
+                        sum += value * y[k]
+                    elif k - p2 == j and k > j:
+                        # am element in z[k - p2]
+                        sum += value * z[k - p2]
+                    elif j == k:
+                        sum += value * x[k]
+            if sum != 0:
+                product[i].append([sum, j])
+    return product
 
 
 if __name__ == '__main__':
     m = read_rare_matrix_file("a.txt")
     a, b, c = read_tridiagonal_matrix_file("b.txt")
 
-    # s = sum_matrix(m, a, b, c)
-    # sum = read_rare_matrix_file("aplusb.txt")
-    # print("Comparare sumei:", compare_matrix(s, sum))
-    #
-    # p = product_matrix(m, a, b, c)
-    # prod = read_rare_matrix_file("aorib.txt")
-    # print("Comparare produsului:", compare_matrix(p, prod))
+    s = sum_matrix(m, a, b, c)
+    sum = read_rare_matrix_file("aplusb.txt")
+    print("Comparare sumei:", compare_matrix(s, sum))
+
+    p = product_matrix(m, a, b, c)
+    prod = read_rare_matrix_file("aorib.txt")
+    print("Comparare produsului:", compare_matrix(p, prod))
 
     d, e, f = read_tridiagonal_matrix_file("c.txt")
     x, y, z = read_tridiagonal_matrix_file("d.txt")
-    print(d, e, f)
-    print(x, y, z)
-    tridiagonal_product(d, e, f, x, y, z)
+    tri_prod = tridiagonal_product(d, e, f, x, y, z)
+    print("produs matrici tridiagonale:", tri_prod)
