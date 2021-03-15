@@ -57,7 +57,7 @@ def sum_matrix(m, a, b, c):
     p = n - len(c)
     q = n - len(b)
     for i in range(n):
-        # pair = (value, column)
+        # pair = [value, column]
         for pair in m[i]:
             column = pair[1]
             if column == q + i and i < column:
@@ -91,6 +91,38 @@ def sum_matrix(m, a, b, c):
     return s
 
 
+def product_matrix(m, a, b, c):
+    n = len(m)
+    s = [[] for _ in range(len(m))]
+    p = n - len(c)
+    q = n - len(b)
+    for i in range(n):
+        for j in range(n):
+            # print("j:", j)
+            sum = 0
+            for pair in m[i]:
+
+                column = pair[1]
+                value = pair[0]
+                # print("for:", column, pair[0])
+                # verificam daca exista element in matricea B pe coloana = j si linia = column
+                if j == q + column and column < j:
+                    # am element in b[column]
+                    sum += value * b[column]
+                    # print("b:", value, "*", b[column])
+                elif column - p == j and column > j:
+                    # am element in c[column-p]
+                    sum += value * c[column - p]
+                    # print("c:", value, "*", c[column - p])
+                elif column == j:
+                    sum += value * a[column]
+                    # print("a", value, "*", a[column])
+            if sum != 0:
+                s[i].append([sum, j])
+
+    return s
+
+
 def compare_matrix(a, b):
     for elem in a:
         elem.sort(key=lambda x: x[1])
@@ -99,10 +131,47 @@ def compare_matrix(a, b):
     return a == b
 
 
+def tridiagonal_product(a, b, c, x, y, z):
+    n = len(a)
+    p1 = n - len(c)
+    q1 = n - len(b)
+    p2 = n - len(z)
+    q2 = n - len(y)
+    product = [[] for _ in range(n)]
+    for i in range(n):
+        print("linia:", i)
+        print("a:", a[i])
+        if p1 <= i <= n - 1:
+            # elem de pe linia i
+            print("c:", c[i - p1])
+        if 0 <= i <= n - q1 - 1:
+            print("b:", b[i])
+        for j in range(n):
+            s = 0
+            print("coloana:", j)
+            print("x:", x[j])
+            if 0 <= j <= n - p2 - 1:
+                # elem de pe col j
+                print("z:", z[j])
+            if q2 <= j <= n - 1:
+                print("y:", y[j - q2])
+            product[i].append([s, j])
+
+
 if __name__ == '__main__':
     m = read_rare_matrix_file("a.txt")
     a, b, c = read_tridiagonal_matrix_file("b.txt")
-    s = sum_matrix(m, a, b, c)
-    # print(s)
-    sum = read_rare_matrix_file("aplusb.txt")
-    print("Comparare sumei:", compare_matrix(s, sum))
+
+    # s = sum_matrix(m, a, b, c)
+    # sum = read_rare_matrix_file("aplusb.txt")
+    # print("Comparare sumei:", compare_matrix(s, sum))
+    #
+    # p = product_matrix(m, a, b, c)
+    # prod = read_rare_matrix_file("aorib.txt")
+    # print("Comparare produsului:", compare_matrix(p, prod))
+
+    d, e, f = read_tridiagonal_matrix_file("c.txt")
+    x, y, z = read_tridiagonal_matrix_file("d.txt")
+    print(d, e, f)
+    print(x, y, z)
+    tridiagonal_product(d, e, f, x, y, z)
